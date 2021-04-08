@@ -1,0 +1,26 @@
+{
+    "id": "79EF47C2",
+    "path": "~/Desktop/overfeeding/metabolomics_FC/pareto_scaling.R",
+    "project_path": "pareto_scaling.R",
+    "type": "r_source",
+    "hash": "4181141620",
+    "contents": "",
+    "dirty": false,
+    "created": 1606975430416.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "tempName": "Untitled1",
+        "cursorPosition": "86,45",
+        "scrollLine": "76",
+        "marks": "<:89,2\n>:89,2"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1607407731,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1607407731286,
+    "read_only": false,
+    "read_only_alternatives": []
+}

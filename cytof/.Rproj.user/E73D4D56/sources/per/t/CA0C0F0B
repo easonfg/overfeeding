@@ -1,0 +1,26 @@
+{
+    "id": "CA0C0F0B",
+    "path": "~/Desktop/overfeeding/cytof/cytof_ana.R",
+    "project_path": "cytof_ana.R",
+    "type": "r_source",
+    "hash": "112538812",
+    "contents": "",
+    "dirty": false,
+    "created": 1604607139442.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "cursorPosition": "0,15",
+        "marks": "<:0,0\n>:179,-1",
+        "scrollLine": "0",
+        "tempName": "Untitled1"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1608238000,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1608238000025,
+    "read_only": false,
+    "read_only_alternatives": []
+}

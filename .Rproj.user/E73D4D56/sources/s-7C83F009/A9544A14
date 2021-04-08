@@ -1,0 +1,25 @@
+{
+    "id": "A9544A14",
+    "path": "~/Desktop/overfeeding/bmi/sspg_deltasspg_predict.R",
+    "project_path": "bmi/sspg_deltasspg_predict.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1607980845859.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "cursorPosition": "186,73",
+        "marks": "",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1604882440,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1604882440,
+    "read_only": false,
+    "read_only_alternatives": []
+}

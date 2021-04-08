@@ -1,0 +1,25 @@
+{
+    "id": "32B8460C",
+    "path": "~/Desktop/overfeeding/cytof/paired.t.test.R",
+    "project_path": "paired.t.test.R",
+    "type": "r_source",
+    "hash": "766677806",
+    "contents": "",
+    "dirty": false,
+    "created": 1608237994131.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "tempName": "Untitled2",
+        "cursorPosition": "158,11",
+        "scrollLine": "151"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1608238070,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1608238070584,
+    "read_only": false,
+    "read_only_alternatives": []
+}

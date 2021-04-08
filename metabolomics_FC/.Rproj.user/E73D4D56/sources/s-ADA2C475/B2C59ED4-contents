@@ -1,0 +1,187 @@
+library(dplyr)
+library(tibble)
+
+
+### read data
+overfeed.data = read.csv('Re__Obesity_data_set/overfeeding_metabolomics.csv', row.names = 1,
+                         header = F, stringsAsFactors = FALSE, sep=',', dec='.')
+
+pheno.data = read.csv('cytof/phenotypes.csv', 
+                      header = T, stringsAsFactors = FALSE, sep=',', dec='.')
+pheno.data
+pheno.data$sspg.didff = pheno.data$SSPG2 - pheno.data$SSPG1
+pheno.data$wt.diff = pheno.data$Wtwk4 - pheno.data$Base.Wt
+pheno.data$lab. = sub('-', '_', pheno.data$lab.)
+pheno.data$lab. = sub('/', '_', pheno.data$lab.)
+
+pheno.data = rename(pheno.data, subject.id = 'lab.')
+
+### get rid of last column which contains 1 number
+overfeed.data = data.frame(t(overfeed.data[,-ncol(overfeed.data)]))
+
+### change all columns that should be numbers to numeric
+# first find exclude all columns that should be factors
+num.col = seq(1,ncol(overfeed.data))[!seq(1, ncol(overfeed.data)) %in% c(1,4,5,6)] 
+# overfeed.data[1:10,1:10]
+# change all remaining to numeric
+overfeed.data[,num.col] = sapply(num.col,
+                                 function(x) as.numeric(as.character(overfeed.data[,x])))
+
+overfeed.data = rename(overfeed.data, subject.id = 'SUBJECT.ID')
+
+str(overfeed.data )
+overfeed.data[1:10,1:10]
+is.na(overfeed.data[1:10,1:10])
+overfeed.data[1:10,1:10]
+
+## change time point to numbers
+overfeed.data$TIME.POINT = rep(c(0,2,4,8), nrow(overfeed.data)/4)
+
+library(lme4)
+# get the metabolite columns
+metabolite_cols = colnames(overfeed.data)[7:ncol(overfeed.data)]
+
+pipeline = function(timepoint) {
+  library(dplyr)
+  rownames(overfeed.data) = paste0(overfeed.data$subject.id, '_', overfeed.data$TIME.POINT)
+  rownames(overfeed.data)
+  pca.data = overfeed.data %>% 
+    filter(TIME.POINT == 0 | TIME.POINT == timepoint)
+  # select(7:ncol(overfeed.data)) 
+  row.names(pca.data)
+  
+  all.base.data = inner_join(pheno.data, pca.data, by = 'subject.id')
+  all.base.data = pca.data
+  all.base.data[1:10, 1:20]
+  
+  # pca.met.data = pca.data %>% select(7:ncol(overfeed.data)) 
+  
+  
+  pca.met.data = all.base.data[complete.cases(all.base.data),]
+  sum(colSums(is.na(pca.met.data)) > 0)
+  ## filter for unique columns
+  pca.met.data = Filter(function(x)(length(unique(x))>1), pca.met.data)
+  pca.met.data[1:10, 1:20]
+  # pca.met.data = data.frame(pca.met.data) %>% remove_rownames() %>% column_to_rownames(var = 'subject.id')
+  pca.met.data[1:10, 1:20]
+  str(pca.met.data)
+  
+  
+  pca.res = prcomp(pca.met.data %>% select(-c(1:6)), scale = T)
+  library("factoextra")
+  fviz_eig(pca.res)
+  # fviz_pca_ind(pca.res, axes = c(3,4),
+  jpeg(paste('metabolomics_FC/clustering/pca_', timepoint, '.jpeg', sep = ''),
+       units="in", width=10, height=10, res=500)
+  pca.plot = fviz_pca_ind(pca.res,
+               # col.ind = "cos2", # Color by the quality of representation
+               # col.ind = as.factor(pca.met.data$GENDER), # Color by the quality of representation
+               # col.ind = (pca.met.data$BMI.x), # Color by the quality of representation
+               # col.ind = (pca.met.data$GROUP.NAME), # Color by the quality of representation
+               col.ind = as.factor(pca.met.data$TIME.POINT), # Color by the quality of representation
+               # col.ind = (pca.met.data$Ethnicity), # Color by the quality of representation
+               # gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+               # gradient.cols = c('red', 'white', 'blue'),
+               repel = TRUE     # Avoid text overlapping
+  )
+  print(pca.plot)
+  dev.off()
+  
+  library(RColorBrewer)
+  heat_colors <- rev(brewer.pal(7, "RdYlBu"))
+  
+  ### Run pheatmap using the metadata data frame for the annotation
+  library(pheatmap)
+  
+  jpeg(paste('metabolomics_FC/clustering/heatmap_', timepoint, '.jpeg', sep = ''),
+       units="in", width=10, height=10, res=500)
+  pheatmap(t(scale(pca.met.data[,20:ncol(pca.met.data)])),
+           annotation_col = data.frame(row.names = rownames(pca.met.data), 
+                                       # groups = pca.met.data$GROUP.NAME,
+                                       # Gender = pca.met.data$Gender,
+                                       # Ethnicity = pca.met.data$Ethnicity),
+                                       TIME.POINT = as.factor(pca.met.data$TIME.POINT)),
+           color = heat_colors,
+           cluster_rows = T,
+           show_rownames = F,
+           border_color = NA,
+           fontsize = 10,
+           scale = "row",
+           fontsize_row = 10,
+           height = 20)
+  dev.off()
+  
+  }
+
+pipeline(2)
+pipeline(4)
+pipeline(8)
+
+
+library(dplyr)
+rownames(overfeed.data) = paste0(overfeed.data$subject.id, '_', overfeed.data$TIME.POINT)
+rownames(overfeed.data)
+pca.data = overfeed.data 
+# select(7:ncol(overfeed.data)) 
+row.names(pca.data)
+
+all.base.data = inner_join(pheno.data, pca.data, by = 'subject.id')
+all.base.data = pca.data
+all.base.data[1:10, 1:20]
+
+# pca.met.data = pca.data %>% select(7:ncol(overfeed.data)) 
+
+
+pca.met.data = all.base.data[complete.cases(all.base.data),]
+sum(colSums(is.na(pca.met.data)) > 0)
+## filter for unique columns
+pca.met.data = Filter(function(x)(length(unique(x))>1), pca.met.data)
+pca.met.data[1:10, 1:20]
+# pca.met.data = data.frame(pca.met.data) %>% remove_rownames() %>% column_to_rownames(var = 'subject.id')
+pca.met.data[1:10, 1:20]
+str(pca.met.data)
+
+
+pca.res = prcomp(pca.met.data %>% select(-c(1:6)), scale = T)
+library("factoextra")
+fviz_eig(pca.res)
+# fviz_pca_ind(pca.res, axes = c(3,4),
+jpeg(paste('metabolomics_FC/clustering/pca_', 'all.timepoints', '.jpeg', sep = ''),
+     units="in", width=10, height=10, res=500)
+pca.plot = fviz_pca_ind(pca.res,
+                        # col.ind = "cos2", # Color by the quality of representation
+                        # col.ind = as.factor(pca.met.data$GENDER), # Color by the quality of representation
+                        # col.ind = (pca.met.data$BMI.x), # Color by the quality of representation
+                        # col.ind = (pca.met.data$GROUP.NAME), # Color by the quality of representation
+                        col.ind = as.factor(pca.met.data$TIME.POINT), # Color by the quality of representation
+                        # col.ind = (pca.met.data$Ethnicity), # Color by the quality of representation
+                        # gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+                        # gradient.cols = c('red', 'white', 'blue'),
+                        repel = TRUE     # Avoid text overlapping
+)
+print(pca.plot)
+dev.off()
+
+library(RColorBrewer)
+heat_colors <- rev(brewer.pal(7, "RdYlBu"))
+
+### Run pheatmap using the metadata data frame for the annotation
+library(pheatmap)
+
+jpeg(paste('metabolomics_FC/clustering/heatmap_', 'all.timepoints', '.jpeg', sep = ''),
+     units="in", width=10, height=10, res=500)
+pheatmap(t(scale(pca.met.data[,20:ncol(pca.met.data)])),
+         annotation_col = data.frame(row.names = rownames(pca.met.data), 
+                                     # groups = pca.met.data$GROUP.NAME,
+                                     # Gender = pca.met.data$Gender,
+                                     # Ethnicity = pca.met.data$Ethnicity),
+                                     TIME.POINT = as.factor(pca.met.data$TIME.POINT)),
+         color = heat_colors,
+         cluster_rows = T,
+         show_rownames = F,
+         border_color = NA,
+         fontsize = 10,
+         scale = "row",
+         fontsize_row = 10,
+         height = 20)
+dev.off()
